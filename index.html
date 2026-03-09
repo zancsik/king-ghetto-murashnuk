@@ -1,556 +1,466 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { Shield, MapPinned, Swords, Search, Trash2, Clock3, Users, Filter, Plus, AlertTriangle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Territory Booking</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #0b0b0f 0%, #14141a 100%);
+      color: #fff;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero, .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .hero {
+      padding: 28px;
+      margin-bottom: 24px;
+      background-image: radial-gradient(circle at top left, rgba(255,0,0,0.18), transparent 35%);
+    }
+    h1, h2, h3, p { margin: 0; }
+    .subtitle { color: #b6b6c5; margin-top: 12px; line-height: 1.6; }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .stat {
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .stat small { color: #999; }
+    .stat strong { display: block; font-size: 28px; margin: 8px 0 4px; }
+    .layout {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 20px;
+    }
+    .card { padding: 20px; }
+    .card h2 { margin-bottom: 16px; }
+    .field { margin-bottom: 14px; }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #cfcfe2;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.35);
+      color: #fff;
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+    textarea { min-height: 90px; resize: vertical; }
+    button {
+      cursor: pointer;
+      background: linear-gradient(90deg, #c51212, #ff4d24);
+      border: none;
+      font-weight: bold;
+      transition: .2s ease;
+    }
+    button:hover { opacity: .92; transform: translateY(-1px); }
+    .muted-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .booking-list { display: grid; gap: 14px; }
+    .booking {
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    .booking-top {
+      height: 4px;
+      background: linear-gradient(90deg, #ff2d2d, #ff8a00);
+    }
+    .booking-content { padding: 16px; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+    }
+    .pending { background: rgba(255,193,7,0.12); color: #ffd86b; }
+    .scheduled { background: rgba(0,200,83,0.14); color: #93f2b2; }
+    .canceled { background: rgba(255,82,82,0.14); color: #ff9a9a; }
+    .meta { color: #a9a9bb; font-size: 14px; margin-top: 8px; line-height: 1.7; }
+    .notes {
+      margin-top: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 12px;
+      color: #ddd;
+    }
+    .mini-list { display: grid; gap: 10px; }
+    .mini-item {
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .date-title {
+      margin: 18px 0 10px;
+      color: #ff9d9d;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    .right-grid { display: grid; gap: 20px; }
+    .danger {
+      background: linear-gradient(90deg, #6d1111, #9b1818);
+    }
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 14px; }
+      .grid-4, .toolbar, .actions { grid-template-columns: 1fr; }
+      .hero { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Сайт забива территорий</h1>
+      <p class="subtitle">Форма для банд, где можно забить территорию и сразу увидеть, кто против кого играет, на какое время и в каком статусе находится забив.</p>
+      <div class="grid-4">
+        <div class="stat"><small>Активные</small><strong id="statActive">0</strong><small>Подтверждено + ожидание</small></div>
+        <div class="stat"><small>Ожидают</small><strong id="statPending">0</strong><small>Нуждаются в подтверждении</small></div>
+        <div class="stat"><small>Пары</small><strong id="statPairs">0</strong><small>Уникальные противостояния</small></div>
+        <div class="stat"><small>Территории</small><strong id="statTerritories">0</strong><small>Используются в забивах</small></div>
+      </div>
+    </section>
 
-const TERRITORIES = [
-  "Rancho",
-  "El Burro Heights",
-  "Cypress Flats",
-  "Strawberry",
-  "Davis",
-  "Chamberlain Hills",
-  "La Mesa",
-  "Murrieta Heights",
-  "East Vinewood",
-  "Little Seoul",
-  "Vespucci",
-  "South LS Port",
-];
-
-const GANGS = [
-  "The Families 🟢",
-  "The Ballas Gang 🟣",
-  "Northside Vagos 🟡",
-  "Marabunta Grande 🔵",
-];
-
-const DEFAULT_BOOKINGS = [
-  {
-    id: crypto.randomUUID(),
-    attacker: "Vagos",
-    defender: "Ballas",
-    territory: "Rancho",
-    date: "2026-03-09",
-    time: "21:00",
-    leader: "Matthew",
-    format: "Основной забив",
-    notes: "Сбор за 20 минут. Без опозданий.",
-    status: "scheduled",
-    createdAt: Date.now() - 1000 * 60 * 50,
-  },
-  {
-    id: crypto.randomUUID(),
-    attacker: "Families",
-    defender: "Marabunta",
-    territory: "Strawberry",
-    date: "2026-03-09",
-    time: "22:00",
-    leader: "Sergio",
-    format: "Капт территории",
-    notes: "Проверить состав до начала.",
-    status: "scheduled",
-    createdAt: Date.now() - 1000 * 60 * 15,
-  },
-  {
-    id: crypto.randomUUID(),
-    attacker: "Bloods",
-    defender: "Crips",
-    territory: "La Mesa",
-    date: "2026-03-10",
-    time: "20:30",
-    leader: "Rider",
-    format: "Перезабив",
-    notes: "Только основной состав.",
-    status: "pending",
-    createdAt: Date.now() - 1000 * 60 * 5,
-  },
-];
-
-const statusConfig = {
-  scheduled: {
-    label: "Подтверждено",
-    className: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  },
-  pending: {
-    label: "Ожидает",
-    className: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  },
-  canceled: {
-    label: "Отменено",
-    className: "bg-rose-500/15 text-rose-300 border-rose-500/30",
-  },
-};
-
-const emptyForm = {
-  attacker: "",
-  defender: "",
-  territory: "",
-  date: "",
-  time: "",
-  leader: "",
-  format: "Основной забив",
-  notes: "",
-  status: "pending",
-};
-
-function formatDate(date) {
-  return new Date(`${date}T00:00:00`).toLocaleDateString("ru-RU", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function StatCard({ title, value, icon: Icon, subtitle }) {
-  return (
-    <Card className="border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl shadow-black/30">
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-sm text-zinc-400">{title}</p>
-            <p className="mt-2 text-3xl font-black tracking-tight text-white">{value}</p>
-            <p className="mt-1 text-xs text-zinc-500">{subtitle}</p>
-          </div>
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-3 text-red-300">
-            <Icon className="h-5 w-5" />
-          </div>
+    <div class="layout">
+      <section class="card">
+        <h2>Форма забива</h2>
+        <div class="field">
+          <label for="attacker">Атакующая банда</label>
+          <select id="attacker">
+            <option value="">Выбери банду</option>
+            <option>The Families 🟢</option>
+            <option>The Ballas Gang 🟣</option>
+            <option>Northside Vagos 🟡</option>
+            <option>Marabunta Grande 🔵</option>
+          </select>
         </div>
-      </CardContent>
-    </Card>
-  );
-}
+        <div class="field">
+          <label for="defender">Защищающаяся банда</label>
+          <select id="defender">
+            <option value="">Выбери банду</option>
+            <option>The Families 🟢</option>
+            <option>The Ballas Gang 🟣</option>
+            <option>Northside Vagos 🟡</option>
+            <option>Marabunta Grande 🔵</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="territory">Территория</label>
+          <input id="territory" placeholder="Например: Rancho" />
+        </div>
+        <div class="field">
+          <label for="date">Дата</label>
+          <input id="date" type="date" />
+        </div>
+        <div class="field">
+          <label for="time">Время</label>
+          <input id="time" type="time" />
+        </div>
+        <div class="field">
+          <label for="leader">Ответственный</label>
+          <input id="leader" placeholder="Ник лидера / куратора" />
+        </div>
+        <div class="field">
+          <label for="format">Формат</label>
+          <select id="format">
+            <option>Основной забив</option>
+            <option>Перезабив</option>
+            <option>Капт территории</option>
+            <option>Спорный забив</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="status">Статус</label>
+          <select id="status">
+            <option value="pending">Ожидает</option>
+            <option value="scheduled">Подтверждено</option>
+            <option value="canceled">Отменено</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="notes">Примечание</label>
+          <textarea id="notes" placeholder="Комментарий по составу, условиям, сбору"></textarea>
+        </div>
+        <div class="actions">
+          <button class="muted-btn" id="clearBtn" type="button">Очистить</button>
+          <button id="saveBtn" type="button">Добавить забив</button>
+        </div>
+      </section>
 
-function BookingCard({ booking, onDelete, onStatusChange }) {
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
-    >
-      <Card className="overflow-hidden border-white/10 bg-zinc-950/70 shadow-xl shadow-black/30">
-        <div className="h-1 w-full bg-gradient-to-r from-red-600 via-orange-500 to-red-700" />
-        <CardContent className="p-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className="border-red-500/30 bg-red-500/10 text-red-200 hover:bg-red-500/10">
-                  <Swords className="mr-1 h-3.5 w-3.5" /> {booking.format}
-                </Badge>
-                <Badge className={`border ${statusConfig[booking.status].className}`}>
-                  {statusConfig[booking.status].label}
-                </Badge>
-              </div>
+      <section class="right-grid">
+        <section class="card">
+          <h2>Список забивов</h2>
+          <div class="toolbar">
+            <input id="search" placeholder="Поиск по банде, территории, ответственному" />
+            <select id="filterStatus">
+              <option value="all">Все статусы</option>
+              <option value="pending">Ожидает</option>
+              <option value="scheduled">Подтверждено</option>
+              <option value="canceled">Отменено</option>
+            </select>
+          </div>
+          <div id="bookingList" class="booking-list"></div>
+        </section>
 
+        <section class="card">
+          <h2>Кто против кого</h2>
+          <div id="versusList" class="mini-list"></div>
+        </section>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'band-bookings-html-v1';
+
+    const defaultBookings = [
+      {
+        id: crypto.randomUUID(),
+        attacker: 'The Families 🟢',
+        defender: 'The Ballas Gang 🟣',
+        territory: 'Rancho',
+        date: '2026-03-09',
+        time: '21:00',
+        leader: 'Matthew',
+        format: 'Основной забив',
+        notes: 'Сбор за 20 минут. Без опозданий.',
+        status: 'scheduled'
+      },
+      {
+        id: crypto.randomUUID(),
+        attacker: 'Northside Vagos 🟡',
+        defender: 'Marabunta Grande 🔵',
+        territory: 'Strawberry',
+        date: '2026-03-09',
+        time: '22:00',
+        leader: 'Sergio',
+        format: 'Капт территории',
+        notes: 'Проверить состав до начала.',
+        status: 'pending'
+      }
+    ];
+
+    let bookings = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || defaultBookings;
+
+    const el = (id) => document.getElementById(id);
+
+    function statusLabel(status) {
+      return status === 'scheduled' ? 'Подтверждено' : status === 'canceled' ? 'Отменено' : 'Ожидает';
+    }
+
+    function formatDate(date) {
+      if (!date) return 'Без даты';
+      return new Date(date + 'T00:00:00').toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
+    }
+
+    function clearForm() {
+      ['attacker','defender','territory','date','time','leader','notes'].forEach(id => el(id).value = '');
+      el('format').value = 'Основной забив';
+      el('status').value = 'pending';
+    }
+
+    function deleteBooking(id) {
+      bookings = bookings.filter(item => item.id !== id);
+      saveState();
+      render();
+    }
+
+    function updateStatus(id, status) {
+      bookings = bookings.map(item => item.id === id ? { ...item, status } : item);
+      saveState();
+      render();
+    }
+
+    function renderStats(filtered) {
+      el('statActive').textContent = bookings.filter(b => b.status !== 'canceled').length;
+      el('statPending').textContent = bookings.filter(b => b.status === 'pending').length;
+      el('statPairs').textContent = new Set(bookings.map(b => `${b.attacker}__${b.defender}`)).size;
+      el('statTerritories').textContent = new Set(bookings.map(b => b.territory)).size;
+    }
+
+    function render() {
+      const q = el('search').value.trim().toLowerCase();
+      const statusFilter = el('filterStatus').value;
+
+      const filtered = [...bookings]
+        .filter(item => {
+          const matchSearch = [item.attacker, item.defender, item.territory, item.leader]
+            .join(' ')
+            .toLowerCase()
+            .includes(q);
+          const matchStatus = statusFilter === 'all' ? true : item.status === statusFilter;
+          return matchSearch && matchStatus;
+        })
+        .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}`) - new Date(`${b.date}T${b.time || '00:00'}`));
+
+      renderStats(filtered);
+
+      const bookingList = el('bookingList');
+      const versusList = el('versusList');
+      bookingList.innerHTML = '';
+      versusList.innerHTML = '';
+
+      if (!filtered.length) {
+        bookingList.innerHTML = '<div class="mini-item">Забивы не найдены.</div>';
+        versusList.innerHTML = '<div class="mini-item">Нет активных записей.</div>';
+        return;
+      }
+
+      let currentDate = '';
+      filtered.forEach(item => {
+        if (item.date !== currentDate) {
+          currentDate = item.date;
+          const dateTitle = document.createElement('div');
+          dateTitle.className = 'date-title';
+          dateTitle.textContent = formatDate(item.date);
+          bookingList.appendChild(dateTitle);
+        }
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'booking';
+        wrapper.innerHTML = `
+          <div class="booking-top"></div>
+          <div class="booking-content">
+            <div class="row">
               <div>
-                <h3 className="text-xl font-black tracking-tight text-white">
-                  {booking.attacker} <span className="text-red-400">vs</span> {booking.defender}
-                </h3>
-                <p className="mt-1 flex flex-wrap items-center gap-3 text-sm text-zinc-400">
-                  <span className="inline-flex items-center gap-1.5"><MapPinned className="h-4 w-4" /> {booking.territory}</span>
-                  <span className="inline-flex items-center gap-1.5"><Clock3 className="h-4 w-4" /> {formatDate(booking.date)} в {booking.time}</span>
-                  <span className="inline-flex items-center gap-1.5"><Users className="h-4 w-4" /> Ответственный: {booking.leader || "—"}</span>
-                </p>
-              </div>
-
-              {booking.notes && (
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-sm text-zinc-300">
-                  {booking.notes}
+                <div class="badges">
+                  <span class="badge">${item.format}</span>
+                  <span class="badge ${item.status}">${statusLabel(item.status)}</span>
                 </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2 sm:flex-row lg:flex-col">
-              <Select value={booking.status} onValueChange={(value) => onStatusChange(booking.id, value)}>
-                <SelectTrigger className="w-[180px] border-white/10 bg-black/30 text-white">
-                  <SelectValue placeholder="Статус" />
-                </SelectTrigger>
-                <SelectContent className="border-white/10 bg-zinc-950 text-white">
-                  <SelectItem value="pending">Ожидает</SelectItem>
-                  <SelectItem value="scheduled">Подтверждено</SelectItem>
-                  <SelectItem value="canceled">Отменено</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button
-                variant="outline"
-                className="border-red-500/30 bg-red-500/10 text-red-200 hover:bg-red-500/20 hover:text-white"
-                onClick={() => onDelete(booking.id)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" /> Удалить
-              </Button>
+                <h3>${item.attacker} vs ${item.defender}</h3>
+                <div class="meta">
+                  ${item.territory} • ${formatDate(item.date)} в ${item.time || '00:00'}<br>
+                  Ответственный: ${item.leader || '—'}
+                </div>
+                ${item.notes ? `<div class="notes">${item.notes}</div>` : ''}
+              </div>
+              <div style="display:grid;gap:10px;min-width:180px;">
+                <select data-status-id="${item.id}">
+                  <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>Ожидает</option>
+                  <option value="scheduled" ${item.status === 'scheduled' ? 'selected' : ''}>Подтверждено</option>
+                  <option value="canceled" ${item.status === 'canceled' ? 'selected' : ''}>Отменено</option>
+                </select>
+                <button class="danger" data-delete-id="${item.id}">Удалить</button>
+              </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
+        `;
+        bookingList.appendChild(wrapper);
 
-export default function BandTerritorySite() {
-  const [form, setForm] = useState(emptyForm);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [bookings, setBookings] = useState(() => {
-    const saved = localStorage.getItem("band-bookings-v1");
-    return saved ? JSON.parse(saved) : DEFAULT_BOOKINGS;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("band-bookings-v1", JSON.stringify(bookings));
-  }, [bookings]);
-
-  const filteredBookings = useMemo(() => {
-    return [...bookings]
-      .filter((item) => {
-        const q = search.toLowerCase();
-        const matchSearch =
-          item.attacker.toLowerCase().includes(q) ||
-          item.defender.toLowerCase().includes(q) ||
-          item.territory.toLowerCase().includes(q) ||
-          item.leader.toLowerCase().includes(q);
-        const matchStatus = statusFilter === "all" ? true : item.status === statusFilter;
-        return matchSearch && matchStatus;
-      })
-      .sort((a, b) => {
-        const dateA = new Date(`${a.date}T${a.time || "00:00"}`).getTime();
-        const dateB = new Date(`${b.date}T${b.time || "00:00"}`).getTime();
-        return dateA - dateB;
+        const versus = document.createElement('div');
+        versus.className = 'mini-item';
+        versus.innerHTML = `
+          <strong>${item.attacker} vs ${item.defender}</strong>
+          <div class="meta">${item.territory} • ${item.time || '00:00'}</div>
+        `;
+        versusList.appendChild(versus);
       });
-  }, [bookings, search, statusFilter]);
 
-  const groupedByDate = useMemo(() => {
-    return filteredBookings.reduce((acc, booking) => {
-      if (!acc[booking.date]) acc[booking.date] = [];
-      acc[booking.date].push(booking);
-      return acc;
-    }, {});
-  }, [filteredBookings]);
+      document.querySelectorAll('[data-delete-id]').forEach(btn => {
+        btn.onclick = () => deleteBooking(btn.dataset.deleteId);
+      });
 
-  const stats = useMemo(() => {
-    const active = bookings.filter((b) => b.status !== "canceled").length;
-    const pending = bookings.filter((b) => b.status === "pending").length;
-    const uniqueWars = new Set(bookings.map((b) => `${b.attacker}-${b.defender}`)).size;
-    const territories = new Set(bookings.map((b) => b.territory)).size;
-    return { active, pending, uniqueWars, territories };
-  }, [bookings]);
+      document.querySelectorAll('[data-status-id]').forEach(select => {
+        select.onchange = () => updateStatus(select.dataset.statusId, select.value);
+      });
+    }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.attacker || !form.defender || !form.territory || !form.date || !form.time) return;
+    el('saveBtn').onclick = () => {
+      const data = {
+        id: crypto.randomUUID(),
+        attacker: el('attacker').value,
+        defender: el('defender').value,
+        territory: el('territory').value.trim(),
+        date: el('date').value,
+        time: el('time').value,
+        leader: el('leader').value.trim(),
+        format: el('format').value,
+        notes: el('notes').value.trim(),
+        status: el('status').value
+      };
 
-    const newBooking = {
-      id: crypto.randomUUID(),
-      ...form,
-      createdAt: Date.now(),
+      if (!data.attacker || !data.defender || !data.territory || !data.date || !data.time) {
+        alert('Заполни атакующую банду, защищающуюся банду, территорию, дату и время.');
+        return;
+      }
+
+      if (data.attacker === data.defender) {
+        alert('Атакующая и защищающаяся банда не могут быть одинаковыми.');
+        return;
+      }
+
+      bookings.unshift(data);
+      saveState();
+      clearForm();
+      render();
     };
 
-    setBookings((prev) => [newBooking, ...prev]);
-    setForm(emptyForm);
-  };
+    el('clearBtn').onclick = clearForm;
+    el('search').oninput = render;
+    el('filterStatus').onchange = render;
 
-  const deleteBooking = (id) => {
-    setBookings((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const updateStatus = (id, status) => {
-    setBookings((prev) => prev.map((item) => (item.id === id ? { ...item, status } : item)));
-  };
-
-  return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(220,38,38,0.18),transparent_30%),linear-gradient(180deg,#09090b_0%,#111111_45%,#09090b_100%)] text-white">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8 overflow-hidden rounded-[28px] border border-white/10 bg-white/5 shadow-2xl shadow-black/40"
-        >
-          <div className="relative p-6 sm:p-8 lg:p-10">
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(239,68,68,0.08),transparent_45%,rgba(249,115,22,0.08))]" />
-            <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-3xl">
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-sm text-red-200">
-                  <Shield className="h-4 w-4" /> Crime Territory Control
-                </div>
-                <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
-                  Сайт для <span className="text-red-400">забивов территорий</span>
-                </h1>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-300 sm:text-lg">
-                  Удобная панель для банд, где можно заполнить форму забива, сразу увидеть кто против кого играет,
-                  на какую территорию назначен капт и в каком он статусе.
-                </p>
-              </div>
-
-              <div className="grid w-full max-w-xl grid-cols-2 gap-3 sm:grid-cols-4">
-                <StatCard title="Активные" value={stats.active} icon={Swords} subtitle="Подтверждено + ожидание" />
-                <StatCard title="Ожидают" value={stats.pending} icon={AlertTriangle} subtitle="Нужно подтвердить" />
-                <StatCard title="Войны" value={stats.uniqueWars} icon={Users} subtitle="Уникальные пары" />
-                <StatCard title="Территории" value={stats.territories} icon={MapPinned} subtitle="Участвуют в боях" />
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2 border border-white/10 bg-white/5">
-            <TabsTrigger value="dashboard">Панель забивов</TabsTrigger>
-            <TabsTrigger value="create">Новый забив</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="dashboard" className="space-y-6">
-            <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
-              <CardContent className="p-4 sm:p-5">
-                <div className="grid gap-3 lg:grid-cols-[1fr_220px]">
-                  <div className="relative">
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                    <Input
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Поиск по банде, территории, ответственному"
-                      className="border-white/10 bg-black/30 pl-10 text-white placeholder:text-zinc-500"
-                    />
-                  </div>
-                  <div className="grid grid-cols-[24px_1fr] items-center gap-2 rounded-2xl border border-white/10 bg-black/30 px-3">
-                    <Filter className="h-4 w-4 text-zinc-500" />
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="border-0 bg-transparent px-0 text-white shadow-none focus:ring-0">
-                        <SelectValue placeholder="Фильтр по статусу" />
-                      </SelectTrigger>
-                      <SelectContent className="border-white/10 bg-zinc-950 text-white">
-                        <SelectItem value="all">Все статусы</SelectItem>
-                        <SelectItem value="pending">Ожидает</SelectItem>
-                        <SelectItem value="scheduled">Подтверждено</SelectItem>
-                        <SelectItem value="canceled">Отменено</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
-              <div className="space-y-5">
-                {Object.keys(groupedByDate).length === 0 ? (
-                  <Card className="border-dashed border-white/10 bg-white/5">
-                    <CardContent className="flex min-h-[220px] flex-col items-center justify-center p-8 text-center">
-                      <MapPinned className="mb-4 h-10 w-10 text-zinc-500" />
-                      <h3 className="text-xl font-bold text-white">Забивы не найдены</h3>
-                      <p className="mt-2 max-w-md text-zinc-400">
-                        Попробуй изменить фильтр или создай новую запись через форму забива.
-                      </p>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  Object.entries(groupedByDate).map(([date, items]) => (
-                    <div key={date} className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-px flex-1 bg-white/10" />
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-400">{formatDate(date)}</p>
-                        <div className="h-px flex-1 bg-white/10" />
-                      </div>
-                      <div className="space-y-4">
-                        {items.map((booking) => (
-                          <BookingCard
-                            key={booking.id}
-                            booking={booking}
-                            onDelete={deleteBooking}
-                            onStatusChange={updateStatus}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              <div className="space-y-6">
-                <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
-                  <CardHeader>
-                    <CardTitle className="text-white">Кто против кого</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {filteredBookings.slice(0, 8).map((item) => (
-                      <div
-                        key={item.id}
-                        className="rounded-2xl border border-white/10 bg-black/30 p-4"
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <div>
-                            <p className="font-bold text-white">{item.attacker} vs {item.defender}</p>
-                            <p className="mt-1 text-sm text-zinc-400">{item.territory} • {item.time}</p>
-                          </div>
-                          <Badge className={`border ${statusConfig[item.status].className}`}>
-                            {statusConfig[item.status].label}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
-                  <CardHeader>
-                    <CardTitle className="text-white">Идея развития</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3 text-sm leading-6 text-zinc-300">
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                      1. Добавить авторизацию по ролям: лидер, заместитель, следящий.
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                      2. Подключить базу данных, чтобы забивы сохранялись для всех пользователей, а не только в браузере.
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                      3. Сделать авто-проверку конфликтов, если две банды забили одно и то же время.
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                      4. Добавить Telegram/Discord уведомления о новом забиве.
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="create">
-            <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <Plus className="h-5 w-5 text-red-400" /> Форма забива территории
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="grid gap-5 lg:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Атакующая банда</Label>
-                    <Select value={form.attacker} onValueChange={(value) => setForm((p) => ({ ...p, attacker: value }))}>
-                      <SelectTrigger className="border-white/10 bg-black/30 text-white">
-                        <SelectValue placeholder="Выбери банду" />
-                      </SelectTrigger>
-                      <SelectContent className="border-white/10 bg-zinc-950 text-white">
-                        {GANGS.map((gang) => <SelectItem key={gang} value={gang}>{gang}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Защищающаяся банда</Label>
-                    <Select value={form.defender} onValueChange={(value) => setForm((p) => ({ ...p, defender: value }))}>
-                      <SelectTrigger className="border-white/10 bg-black/30 text-white">
-                        <SelectValue placeholder="Выбери банду" />
-                      </SelectTrigger>
-                      <SelectContent className="border-white/10 bg-zinc-950 text-white">
-                        {GANGS.map((gang) => <SelectItem key={gang} value={gang}>{gang}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Территория</Label>
-                    <Select value={form.territory} onValueChange={(value) => setForm((p) => ({ ...p, territory: value }))}>
-                      <SelectTrigger className="border-white/10 bg-black/30 text-white">
-                        <SelectValue placeholder="Выбери территорию" />
-                      </SelectTrigger>
-                      <SelectContent className="border-white/10 bg-zinc-950 text-white">
-                        {TERRITORIES.map((territory) => <SelectItem key={territory} value={territory}>{territory}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Формат</Label>
-                    <Select value={form.format} onValueChange={(value) => setForm((p) => ({ ...p, format: value }))}>
-                      <SelectTrigger className="border-white/10 bg-black/30 text-white">
-                        <SelectValue placeholder="Формат забива" />
-                      </SelectTrigger>
-                      <SelectContent className="border-white/10 bg-zinc-950 text-white">
-                        <SelectItem value="Основной забив">Основной забив</SelectItem>
-                        <SelectItem value="Перезабив">Перезабив</SelectItem>
-                        <SelectItem value="Капт территории">Капт территории</SelectItem>
-                        <SelectItem value="Спорный забив">Спорный забив</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Дата</Label>
-                    <Input
-                      type="date"
-                      value={form.date}
-                      onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))}
-                      className="border-white/10 bg-black/30 text-white"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Время</Label>
-                    <Input
-                      type="time"
-                      value={form.time}
-                      onChange={(e) => setForm((p) => ({ ...p, time: e.target.value }))}
-                      className="border-white/10 bg-black/30 text-white"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Ответственный</Label>
-                    <Input
-                      placeholder="Ник лидера / куратора"
-                      value={form.leader}
-                      onChange={(e) => setForm((p) => ({ ...p, leader: e.target.value }))}
-                      className="border-white/10 bg-black/30 text-white placeholder:text-zinc-500"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Статус</Label>
-                    <Select value={form.status} onValueChange={(value) => setForm((p) => ({ ...p, status: value }))}>
-                      <SelectTrigger className="border-white/10 bg-black/30 text-white">
-                        <SelectValue placeholder="Статус" />
-                      </SelectTrigger>
-                      <SelectContent className="border-white/10 bg-zinc-950 text-white">
-                        <SelectItem value="pending">Ожидает</SelectItem>
-                        <SelectItem value="scheduled">Подтверждено</SelectItem>
-                        <SelectItem value="canceled">Отменено</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2 lg:col-span-2">
-                    <Label>Примечание</Label>
-                    <Textarea
-                      placeholder="Комментарий по составу, условиям, сбору, правилам"
-                      value={form.notes}
-                      onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
-                      className="min-h-[110px] border-white/10 bg-black/30 text-white placeholder:text-zinc-500"
-                    />
-                  </div>
-
-                  <div className="lg:col-span-2 flex flex-col gap-3 sm:flex-row sm:justify-end">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="border-white/10 bg-white/5 text-white hover:bg-white/10"
-                      onClick={() => setForm(emptyForm)}
-                    >
-                      Очистить
-                    </Button>
-                    <Button type="submit" className="bg-red-600 text-white hover:bg-red-500">
-                      <Plus className="mr-2 h-4 w-4" /> Добавить забив
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
-}
+    render();
+  </script>
+</body>
+</html>
