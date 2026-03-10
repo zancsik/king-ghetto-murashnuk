@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Capture Ukraine | GTA V Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <title>Capture Ukraine GTA V | Universal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0a0c;
-            --panel: #141417;
-            --panel-light: #1c1c21;
+            --panel: rgba(20, 20, 23, 0.95);
             --accent: #3498db;
             --families: #2ecc71;
             --ballas: #9b59b6;
             --vagos: #f1c40f;
             --marabunta: #3498db;
-            --danger: #e74c3c;
-            --text: #e0e0e0;
-            --text-muted: #888891;
-            --glass: rgba(255, 255, 255, 0.03);
+            --text: #ffffff;
+            --text-dim: #888891;
             --border: rgba(255, 255, 255, 0.08);
         }
 
@@ -26,18 +23,14 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg);
+            background: var(--bg) url('https://i.imgur.com/G0NfX2n.jpeg') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text);
             margin: 0;
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
-
-        /* --- Scrollbar --- */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--panel-light); border-radius: 10px; }
 
         /* --- Sidebar --- */
         .sidebar {
@@ -46,339 +39,311 @@
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            z-index: 10;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
         }
 
-        .sidebar-header {
-            padding: 40px 20px;
-            text-align: center;
-            background: linear-gradient(to bottom, rgba(52, 152, 219, 0.05), transparent);
-        }
-
-        .sidebar-header img {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: 3px solid var(--accent);
-            padding: 5px;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 0 10px var(--accent));
-        }
-
-        .sidebar-header h3 { font-family: 'Rajdhani', sans-serif; margin: 0; font-size: 22px; letter-spacing: 1px; }
-        .user-badge { font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-top: 5px; display: block; }
-
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+        .sidebar-header img { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent); margin-bottom: 10px; }
+        
         .nav-list { list-style: none; padding: 20px 10px; margin: 0; flex-grow: 1; }
         .nav-item {
-            padding: 14px 20px;
-            margin-bottom: 8px;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 14px;
+            padding: 14px 20px; margin-bottom: 5px; border-radius: 10px;
+            cursor: pointer; display: flex; align-items: center; gap: 12px;
+            color: var(--text-dim); font-weight: 600;
         }
-
-        .nav-item:hover { background: var(--glass); color: var(--text); }
-        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #white; }
+        .nav-item.active { background: var(--accent); color: white; }
 
         /* --- Main Content --- */
-        .content { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-        /* --- Stats Bar --- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+        /* --- Top Bar (Mobile) --- */
+        .mobile-header {
+            display: none; background: var(--panel); padding: 15px;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
         }
 
+        /* --- Statistics --- */
+        .stats-bar {
+            display: flex; gap: 15px; padding: 20px; overflow-x: auto;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+        }
         .stat-card {
-            background: var(--panel);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
+            min-width: 160px; background: var(--panel); padding: 12px 20px;
+            border-radius: 12px; border-left: 4px solid #fff;
         }
 
-        .stat-card::before {
-            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px;
-        }
+        /* --- Map Viewport --- */
+        .map-container { flex: 1; overflow: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .map-layout { display: flex; gap: 40px; padding: 20px; min-width: max-content; }
+        .grid-cluster { display: grid; grid-template-columns: repeat(6, 46px); gap: 6px; }
 
-        .stat-card.fam::before { background: var(--families); }
-        .stat-card.bal::before { background: var(--ballas); }
-        .stat-card.vag::before { background: var(--vagos); }
-        .stat-card.mar::before { background: var(--marabunta); }
-
-        .stat-card h4 { margin: 0; font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
-        .stat-card .value { font-size: 28px; font-weight: 700; margin-top: 5px; font-family: 'Rajdhani'; }
-
-        /* --- Map Styling --- */
-        .map-wrapper {
-            background: var(--panel);
-            padding: 30px;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            display: inline-block;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        }
-
-        .map-grid {
-            display: grid;
-            grid-template-columns: repeat(11, 52px);
-            gap: 8px;
-        }
-
+        /* --- Cell Style --- */
         .cell {
-            width: 52px;
-            height: 52px;
-            background: var(--panel-light);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: 1px solid transparent;
-            position: relative;
+            width: 46px; height: 46px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border); border-radius: 6px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; font-size: 18px;
         }
+        .cell:hover { transform: scale(1.1); z-index: 10; border-color: white; }
+        .cell .id { position: absolute; top: 2px; left: 4px; font-size: 8px; opacity: 0.6; }
 
-        .cell:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); z-index: 2; }
-        .cell .id { font-size: 9px; position: absolute; top: 4px; left: 6px; opacity: 0.5; font-weight: 700; }
-        .cell .icon { font-size: 20px; }
+        .fam { background: var(--families) !important; color: #000; }
+        .bal { background: var(--ballas) !important; color: #fff; }
+        .vag { background: var(--vagos) !important; color: #000; }
+        .mar { background: var(--marabunta) !important; color: #fff; }
 
-        /* --- Forms & Buttons --- */
-        input, select, textarea {
-            background: var(--panel-light);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 10px;
-            width: 100%;
-            margin-bottom: 15px;
-            font-family: inherit;
+        /* --- Modals & Forms --- */
+        .overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            z-index: 2000; align-items: center; justify-content: center; padding: 20px;
         }
-
-        button {
-            padding: 12px 24px;
-            border-radius: 10px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .modal {
+            background: #1a1a1d; width: 100%; max-width: 400px; padding: 30px;
+            border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-
-        .btn-main { background: var(--accent); color: white; }
-        .btn-main:hover { filter: brightness(1.2); transform: translateY(-2px); }
-
-        /* --- Auth Page --- */
-        .auth-overlay {
-            position: fixed; inset: 0; background: var(--bg); z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
-            background-image: radial-gradient(circle at center, #1c1c21 0%, #0a0a0c 100%);
+        input, select, button {
+            width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px;
+            border: 1px solid var(--border); background: #111; color: white;
         }
+        button.primary { background: var(--accent); border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
-        .auth-box {
-            background: var(--panel);
-            width: 380px;
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-        }
-
-        .auth-box h2 { text-align: center; font-family: 'Rajdhani'; font-size: 32px; margin-bottom: 30px; }
-
-        /* --- History Cards --- */
-        .history-item {
-            background: var(--panel);
-            margin-bottom: 15px;
-            padding: 20px;
-            border-radius: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid var(--accent);
-        }
-
-        @media (max-width: 1000px) {
-            .sidebar { width: 80px; }
-            .sidebar-header h3, .user-badge, .nav-item span { display: none; }
-            .map-grid { grid-template-columns: repeat(7, 45px); }
+        /* --- Mobile Adaptivity --- */
+        @media (max-width: 850px) {
+            .sidebar {
+                position: fixed; left: -280px; top: 0; bottom: 0;
+                transition: 0.3s ease;
+            }
+            .sidebar.open { left: 0; }
+            .mobile-header { display: flex; }
+            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; }
+            .sidebar-overlay.show { display: block; }
         }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen" class="auth-overlay">
-        <div class="auth-box">
-            <h2 id="auth-title">TERMINAL ACCESS</h2>
-            <div id="auth-form">
-                <input type="text" id="log" placeholder="ЛОГІН">
-                <input type="password" id="pass" placeholder="ПАРОЛЬ">
-                <select id="gang-select" style="display:none;">
-                    <option value="families">THE FAMILIES</option>
-                    <option value="ballas">THE BALLAS GANG</option>
-                    <option value="vagos">NORTHSIDE VAGOS</option>
-                    <option value="marabunta" selected>MARABUNTA GRANDE</option>
-                </select>
-                <button class="btn-main" style="width:100%" onclick="auth()">УВІЙТИ</button>
-                <p style="text-align:center; font-size:12px; margin-top:20px; color:var(--text-muted); cursor:pointer" onclick="toggleReg()">
-                    Немає аккаунту? Створити
-                </p>
-            </div>
-        </div>
-    </div>
+    <div class="sidebar-overlay" id="sb-overlay" onclick="toggleSidebar()"></div>
 
-    <nav class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="https://i.imgur.com/8K6rX3X.png" id="u-img">
-            <h3 id="u-gang">GANG NAME</h3>
-            <span class="user-badge" id="u-role">Role</span>
+            <img src="https://i.imgur.com/8K6rX3X.png" alt="Logo">
+            <h3 id="u-gang">Marabunta</h3>
+            <span style="font-size: 11px; color: var(--text-dim);" id="u-name">Matthew Reiss (Admin)</span>
         </div>
-        <div class="nav-list">
-            <div class="nav-item active" onclick="nav('map')">⚔ <span>Захоплення</span></div>
-            <div class="nav-item" onclick="nav('cabinet')">👑 <span>Кабінет</span></div>
-            <div class="nav-item" onclick="nav('history')">🕘 <span>Історія</span></div>
-            <div class="nav-item" id="adm-btn" style="display:none" onclick="nav('admin')">⚙ <span>Адмін</span></div>
+        <ul class="nav-list">
+            <li class="nav-item active" onclick="showSec('map')">⚔ Захоплення</li>
+            <li class="nav-item" onclick="showSec('cabinet')">👑 Кабінет</li>
+            <li class="nav-item" onclick="showSec('history')">🕘 Історія</li>
+            <li id="adm-nav" class="nav-item" style="display:none;" onclick="showSec('admin')">⚙ Адмін</li>
+        </ul>
+        <div style="padding: 20px;">
+            <button onclick="location.reload()" style="background: #222; border: 1px solid #444;">ВИЙТИ</button>
         </div>
-        <div style="padding:20px">
-            <button class="btn-main" style="width:100%; background:#222; font-size:12px" onclick="location.reload()">ВИХІД</button>
-        </div>
-    </nav>
+    </aside>
 
-    <main class="content">
-        <section id="s-map">
-            <div class="stats-grid">
-                <div class="stat-card fam"><h4>Families</h4><div class="value" id="count-fam">0</div></div>
-                <div class="stat-card bal"><h4>Ballas</h4><div class="value" id="count-bal">0</div></div>
-                <div class="stat-card vag"><h4>Vagos</h4><div class="value" id="count-vag">0</div></div>
-                <div class="stat-card mar"><h4>Marabunta</h4><div class="value" id="count-mar">0</div></div>
-            </div>
-            <div class="map-wrapper">
-                <div class="map-grid" id="grid"></div>
+    <div class="main-content">
+        <header class="mobile-header">
+            <button onclick="toggleSidebar()" style="background:none; border:none; color:white; font-size:24px;">☰</button>
+            <span style="font-weight:bold; letter-spacing:1px;">CAPTURE UKRAINE</span>
+            <div style="width:24px;"></div>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-card" style="border-color: var(--families)">Families: <b id="cnt-fam">0</b></div>
+            <div class="stat-card" style="border-color: var(--ballas)">Ballas: <b id="cnt-bal">0</b></div>
+            <div class="stat-card" style="border-color: var(--vagos)">Vagos: <b id="cnt-vag">0</b></div>
+            <div class="stat-card" style="border-color: var(--marabunta)">Marabunta: <b id="cnt-mar">0</b></div>
+        </div>
+
+        <section id="sec-map" class="map-container">
+            <div class="map-layout">
+                <div class="grid-cluster" id="cluster-1"></div>
+                <div class="grid-cluster" id="cluster-2"></div>
             </div>
         </section>
 
-        <section id="s-cabinet" style="display:none">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px">
-                <h2>УПРАВЛІННЯ КАПТАМИ</h2>
-                <button class="btn-main" onclick="openModal('capt-modal')">+ СТВОРТИ КАПТ</button>
-            </div>
-            <div id="active-list"></div>
+        <section id="sec-cabinet" style="display:none; padding: 20px; overflow-y:auto;">
+            <h2>Активні операції</h2>
+            <button class="primary" onclick="openModal('modal-capt')">+ Створити новий капт</button>
+            <div id="capt-list" style="margin-top:20px;"></div>
         </section>
 
-        <section id="s-history" style="display:none">
-            <h2>АРХІВ ЗАХОПЛЕНЬ</h2>
+        <section id="sec-history" style="display:none; padding: 20px; overflow-y:auto;">
+            <h2>Історія захоплень</h2>
             <div id="hist-list"></div>
         </section>
 
-        <section id="s-admin" style="display:none">
-            <h2>АДМІНІСТРУВАННЯ</h2>
-            <div id="user-table"></div>
+        <section id="sec-admin" style="display:none; padding: 20px; overflow-y:auto;">
+            <h2>Адмін-панель</h2>
+            <div id="user-list"></div>
         </section>
-    </main>
+    </div>
 
-    <div id="paint-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center;">
-        <div class="auth-box">
-            <h3>ТЕРИТОРІЯ №<span id="p-id">0</span></h3>
+    <div class="overlay" id="modal-paint">
+        <div class="modal">
+            <h3>Територія №<span id="target-id">0</span></h3>
+            <label>Власник:</label>
             <select id="p-gang">
-                <option value="none">НІХТО</option>
-                <option value="families">FAMILIES</option>
-                <option value="ballas">BALLAS</option>
-                <option value="vagos">VAGOS</option>
-                <option value="marabunta">MARABUNTA</option>
+                <option value="none">Ніхто</option>
+                <option value="families">Families</option>
+                <option value="ballas">Ballas</option>
+                <option value="vagos">Vagos</option>
+                <option value="marabunta">Marabunta</option>
             </select>
-            <button class="btn-main" style="width:100%" onclick="applyPaint()">ЗБЕРЕГТИ</button>
-            <button class="btn-main" style="width:100%; background:#333; margin-top:10px" onclick="this.parentElement.parentElement.style.display='none'">СКАСУВАТИ</button>
+            <label>Тип:</label>
+            <select id="p-type">
+                <option value="☠">☠ Звичайна</option>
+                <option value="🔒">🔒 Заблокована</option>
+                <option value="🏰">🏰 Титул</option>
+            </select>
+            <button class="primary" onclick="applyPaint()">ЗБЕРЕГТИ</button>
+            <button onclick="closeModal()" style="background:#333;">СКАСУВАТИ</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="modal-capt">
+        <div class="modal">
+            <h3>Нове захоплення</h3>
+            <input type="number" id="c-terr" placeholder="№ Території">
+            <select id="c-def">
+                <option value="families">Захист: Families</option>
+                <option value="ballas">Захист: Ballas</option>
+                <option value="vagos">Захист: Vagos</option>
+                <option value="marabunta">Захист: Marabunta</option>
+            </select>
+            <input type="text" id="c-form" placeholder="Формат (н-р: 15х15)">
+            <input type="time" id="c-time">
+            <button class="primary" onclick="submitCapt()">СТВОРИТИ</button>
+            <button onclick="closeModal()" style="background:#333;">СКАСУВАТИ</button>
         </div>
     </div>
 
     <script>
-        // Core Logic
-        const bc = new BroadcastChannel('gta_capture_v5');
-        let user = null;
-        let territories = JSON.parse(localStorage.getItem('gt_terr')) || Array.from({length:77}, (_,i)=>({id:i+1, gang:'none', type:'☠'}));
-        let captures = JSON.parse(localStorage.getItem('gt_caps')) || [];
-        let isReg = false;
+        // Data Handling
+        const bc = new BroadcastChannel('gtav_sync');
+        let territories = JSON.parse(localStorage.getItem('gt_t')) || Array.from({length:77}, (_,i)=>({id:i+1, gang:'none', type:'☠'}));
+        let captures = JSON.parse(localStorage.getItem('gt_c')) || [];
+        
+        // Для демонстрації - адмін по замовчуванню
+        const user = { role: 'admin', gang: 'marabunta', name: 'Matthew Reiss' };
 
-        function toggleReg() {
-            isReg = !isReg;
-            document.getElementById('auth-title').innerText = isReg ? 'REGISTRATION' : 'TERMINAL ACCESS';
-            document.getElementById('gang-select').style.display = isReg ? 'block' : 'none';
+        function init() {
+            if(user.role === 'admin') document.getElementById('adm-nav').style.display = 'flex';
+            renderMap();
+            renderStats();
+            renderCaptures();
+            renderHistory();
         }
 
-        function auth() {
-            const l = document.getElementById('log').value;
-            const p = document.getElementById('pass').value;
-            const g = document.getElementById('gang-select').value;
-            
-            if(l === 'admin' && p === 'admin') user = {login:'Admin', role:'admin', gang:'marabunta'};
-            else user = {login:l, role:'capt', gang:isReg ? g : 'marabunta'};
-            
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('u-gang').innerText = user.gang.toUpperCase();
-            document.getElementById('u-role').innerText = user.role;
-            if(user.role === 'admin') document.getElementById('adm-btn').style.display = 'flex';
-            render();
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sb-overlay').classList.toggle('show');
         }
 
-        function render() {
-            const g = document.getElementById('grid');
-            g.innerHTML = '';
-            const counts = {families:0, ballas:0, vagos:0, marabunta:0};
+        function showSec(id) {
+            ['map','cabinet','history','admin'].forEach(s => document.getElementById('sec-'+s).style.display = 'none');
+            document.getElementById('sec-'+id).style.display = (id === 'map') ? 'flex' : 'block';
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            if(window.innerWidth < 850) toggleSidebar();
+        }
 
-            territories.forEach(t => {
-                const c = document.createElement('div');
-                c.className = 'cell';
-                const color = getComputedStyle(document.documentElement).getPropertyValue(`--${t.gang}`).trim();
-                c.style.background = t.gang !== 'none' ? `linear-gradient(135deg, ${color}cc, ${color}66)` : 'var(--panel-light)';
-                if(t.gang !== 'none') {
-                    c.style.borderColor = color;
-                    counts[t.gang]++;
-                }
-                c.innerHTML = `<span class="id">${t.id}</span><span class="icon">${t.type}</span>`;
-                c.onclick = () => { if(user.role === 'admin') openPaint(t.id) };
-                g.appendChild(c);
-            });
+        function renderMap() {
+            const c1 = document.getElementById('cluster-1');
+            const c2 = document.getElementById('cluster-2');
+            c1.innerHTML = ''; c2.innerHTML = '';
 
-            ['fam','bal','vag','mar'].forEach(k => {
-                const key = k === 'fam'?'families':k==='bal'?'ballas':k==='vag'?'vagos':'marabunta';
-                document.getElementById(`count-${k}`).innerText = counts[key];
+            territories.forEach((t, index) => {
+                const cell = document.createElement('div');
+                cell.className = `cell ${t.gang !== 'none' ? t.gang.substring(0,3) : ''}`;
+                cell.innerHTML = `<span class="id">${t.id}</span>${t.type}`;
+                cell.onclick = () => { if(user.role === 'admin') openPaint(t.id) };
+                (index < 42) ? c1.appendChild(cell) : c2.appendChild(cell);
             });
+        }
+
+        function renderStats() {
+            const counts = { families: 0, ballas: 0, vagos: 0, marabunta: 0 };
+            territories.forEach(t => { if(counts[t.gang] !== undefined) counts[t.gang]++; });
+            document.getElementById('cnt-fam').innerText = counts.families;
+            document.getElementById('cnt-bal').innerText = counts.ballas;
+            document.getElementById('cnt-vag').innerText = counts.vagos;
+            document.getElementById('cnt-mar').innerText = counts.marabunta;
         }
 
         function openPaint(id) {
-            document.getElementById('p-id').innerText = id;
-            document.getElementById('paint-modal').style.display = 'flex';
+            document.getElementById('target-id').innerText = id;
+            document.getElementById('modal-paint').style.display = 'flex';
         }
 
         function applyPaint() {
-            const id = parseInt(document.getElementById('p-id').innerText);
-            territories[id-1].gang = document.getElementById('p-gang').value;
-            localStorage.setItem('gt_terr', JSON.stringify(territories));
-            render();
-            bc.postMessage('update');
-            document.getElementById('paint-modal').style.display = 'none';
+            const id = parseInt(document.getElementById('target-id').innerText);
+            const t = territories.find(x => x.id === id);
+            t.gang = document.getElementById('p-gang').value;
+            t.type = document.getElementById('p-type').value;
+            save();
+            closeModal();
         }
 
-        function nav(sec) {
-            document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById(`s-${sec}`).style.display = 'block';
-            event.currentTarget.classList.add('active');
+        function submitCapt() {
+            const c = {
+                id: Date.now(),
+                terr: document.getElementById('c-terr').value,
+                attacker: user.gang,
+                defender: document.getElementById('c-def').value,
+                time: document.getElementById('c-time').value,
+                status: 'active'
+            };
+            captures.push(c);
+            save();
+            closeModal();
+        }
+
+        function renderCaptures() {
+            const list = document.getElementById('capt-list');
+            list.innerHTML = '';
+            captures.filter(c => c.status === 'active').forEach(c => {
+                list.innerHTML += `<div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:10px; border-left:4px solid var(--accent)">
+                    <b>${c.attacker.toUpperCase()} vs ${c.defender.toUpperCase()}</b><br>
+                    <small>Територія №${c.terr} | Час: ${c.time}</small>
+                    <button onclick="finishCapt(${c.id})" style="width:auto; margin-left:20px; padding:5px 10px; font-size:10px;">Завершити</button>
+                </div>`;
+            });
+        }
+
+        function finishCapt(id) {
+            const c = captures.find(x => x.id === id);
+            c.status = 'finished';
+            c.winner = prompt("Хто переміг?", c.attacker);
+            save();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('hist-list');
+            list.innerHTML = captures.filter(c => c.status === 'finished').map(c => 
+                `<div style="padding:10px; border-bottom:1px solid #333;">🏆 <b>${c.winner}</b> переміг у капті №${c.terr}</div>`
+            ).join('');
+        }
+
+        function closeModal() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+
+        function save() {
+            localStorage.setItem('gt_t', JSON.stringify(territories));
+            localStorage.setItem('gt_c', JSON.stringify(captures));
+            bc.postMessage('sync');
+            renderMap(); renderStats(); renderCaptures(); renderHistory();
         }
 
         bc.onmessage = () => {
-            territories = JSON.parse(localStorage.getItem('gt_terr'));
-            render();
+            territories = JSON.parse(localStorage.getItem('gt_t'));
+            captures = JSON.parse(localStorage.getItem('gt_c'));
+            renderMap(); renderStats(); renderCaptures(); renderHistory();
         };
+
+        init();
     </script>
 </body>
 </html>
