@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Capture Ukraine GTA V | Universal</title>
+    <title>Capture Ukraine | GTA V</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,139 +15,101 @@
             --vagos: #f1c40f;
             --marabunta: #3498db;
             --text: #ffffff;
-            --text-dim: #888891;
             --border: rgba(255, 255, 255, 0.08);
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease; }
-
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--bg) url('https://i.imgur.com/G0NfX2n.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
+            background-size: cover; margin: 0; display: flex; height: 100vh; overflow: hidden;
         }
 
-        /* --- Sidebar --- */
-        .sidebar {
-            width: 280px;
-            background: var(--panel);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-            backdrop-filter: blur(15px);
+        /* --- Auth Layer --- */
+        #auth-screen {
+            position: fixed; inset: 0; background: var(--bg); z-index: 3000;
+            display: flex; align-items: center; justify-content: center;
         }
+        .auth-box { background: #1a1a1d; padding: 40px; border-radius: 20px; width: 100%; max-width: 400px; border: 1px solid var(--border); }
 
-        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border); }
-        .sidebar-header img { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent); margin-bottom: 10px; }
-        
-        .nav-list { list-style: none; padding: 20px 10px; margin: 0; flex-grow: 1; }
-        .nav-item {
-            padding: 14px 20px; margin-bottom: 5px; border-radius: 10px;
-            cursor: pointer; display: flex; align-items: center; gap: 12px;
-            color: var(--text-dim); font-weight: 600;
-        }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: #white; }
-        .nav-item.active { background: var(--accent); color: white; }
+        /* --- Layout --- */
+        .sidebar { width: 280px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 1000; backdrop-filter: blur(15px); }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .mobile-header { display: none; background: var(--panel); padding: 15px; border-bottom: 1px solid var(--border); justify-content: space-between; align-items: center; }
 
-        /* --- Main Content --- */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-
-        /* --- Top Bar (Mobile) --- */
-        .mobile-header {
-            display: none; background: var(--panel); padding: 15px;
-            justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
-        }
-
-        /* --- Statistics --- */
-        .stats-bar {
-            display: flex; gap: 15px; padding: 20px; overflow-x: auto;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
-        }
-        .stat-card {
-            min-width: 160px; background: var(--panel); padding: 12px 20px;
-            border-radius: 12px; border-left: 4px solid #fff;
-        }
-
-        /* --- Map Viewport --- */
+        /* --- Map & Grid --- */
         .map-container { flex: 1; overflow: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .map-layout { display: flex; gap: 40px; padding: 20px; min-width: max-content; }
         .grid-cluster { display: grid; grid-template-columns: repeat(6, 46px); gap: 6px; }
-
-        /* --- Cell Style --- */
         .cell {
-            width: 46px; height: 46px; background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border); border-radius: 6px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; position: relative; font-size: 18px;
+            width: 46px; height: 46px; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;
         }
-        .cell:hover { transform: scale(1.1); z-index: 10; border-color: white; }
-        .cell .id { position: absolute; top: 2px; left: 4px; font-size: 8px; opacity: 0.6; }
+        .cell.fam { background: var(--families) !important; color: #000; }
+        .cell.bal { background: var(--ballas) !important; color: #fff; }
+        .cell.vag { background: var(--vagos) !important; color: #000; }
+        .cell.mar { background: var(--marabunta) !important; color: #fff; }
 
-        .fam { background: var(--families) !important; color: #000; }
-        .bal { background: var(--ballas) !important; color: #fff; }
-        .vag { background: var(--vagos) !important; color: #000; }
-        .mar { background: var(--marabunta) !important; color: #fff; }
+        /* --- Stats --- */
+        .stats-bar { display: flex; gap: 15px; padding: 20px; overflow-x: auto; background: rgba(0,0,0,0.5); }
+        .stat-card { min-width: 160px; background: var(--panel); padding: 12px; border-radius: 12px; border-bottom: 3px solid #fff; }
 
-        /* --- Modals & Forms --- */
-        .overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-            z-index: 2000; align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal {
-            background: #1a1a1d; width: 100%; max-width: 400px; padding: 30px;
-            border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-        input, select, button {
-            width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px;
-            border: 1px solid var(--border); background: #111; color: white;
-        }
-        button.primary { background: var(--accent); border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        /* --- UI Elements --- */
+        .nav-item { padding: 14px 20px; margin: 5px 10px; border-radius: 10px; cursor: pointer; color: #888; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .nav-item.active { background: var(--accent); color: white; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: #111; color: white; }
+        button.primary { background: var(--accent); border: none; font-weight: bold; cursor: pointer; }
 
-        /* --- Mobile Adaptivity --- */
+        /* --- Modals --- */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal { background: #1a1a1d; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; border: 1px solid var(--border); }
+
         @media (max-width: 850px) {
-            .sidebar {
-                position: fixed; left: -280px; top: 0; bottom: 0;
-                transition: 0.3s ease;
-            }
+            .sidebar { position: fixed; left: -280px; top: 0; bottom: 0; transition: 0.3s; }
             .sidebar.open { left: 0; }
             .mobile-header { display: flex; }
-            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; }
-            .sidebar-overlay.show { display: block; }
         }
     </style>
 </head>
 <body>
 
-    <div class="sidebar-overlay" id="sb-overlay" onclick="toggleSidebar()"></div>
+    <div id="auth-screen">
+        <div class="auth-box">
+            <h2 id="auth-title">Вхід</h2>
+            <input type="text" id="auth-user" placeholder="Логін">
+            <input type="password" id="auth-pass" placeholder="Пароль">
+            <div id="reg-fields" style="display:none">
+                <label style="font-size: 12px;">Оберіть вашу банду:</label>
+                <select id="auth-gang">
+                    <option value="families">The Families 🟢</option>
+                    <option value="ballas">The Ballas Gang 🟣</option>
+                    <option value="vagos">Northside Vagos 🟡</option>
+                    <option value="marabunta">Marabunta Grande 🔵</option>
+                </select>
+            </div>
+            <button class="primary" onclick="processAuth()" id="auth-btn">Увійти</button>
+            <p style="text-align:center; font-size:12px; cursor:pointer; color:var(--accent)" onclick="toggleAuth()">Реєстрація</p>
+        </div>
+    </div>
 
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <img src="https://i.imgur.com/8K6rX3X.png" alt="Logo">
-            <h3 id="u-gang">Marabunta</h3>
-            <span style="font-size: 11px; color: var(--text-dim);" id="u-name">Matthew Reiss (Admin)</span>
+        <div style="padding:30px; text-align:center; border-bottom:1px solid var(--border)">
+            <img id="u-avatar" src="https://i.imgur.com/8K6rX3X.png" style="width:70px; border-radius:50%; border:2px solid var(--accent)">
+            <h3 id="u-gang-name" style="margin:10px 0 5px">Банда</h3>
+            <span id="u-login" style="font-size:12px; color:#888">Login (capt)</span>
         </div>
-        <ul class="nav-list">
-            <li class="nav-item active" onclick="showSec('map')">⚔ Захоплення</li>
-            <li class="nav-item" onclick="showSec('cabinet')">👑 Кабінет</li>
-            <li class="nav-item" onclick="showSec('history')">🕘 Історія</li>
-            <li id="adm-nav" class="nav-item" style="display:none;" onclick="showSec('admin')">⚙ Адмін</li>
-        </ul>
-        <div style="padding: 20px;">
-            <button onclick="location.reload()" style="background: #222; border: 1px solid #444;">ВИЙТИ</button>
-        </div>
+        <div class="nav-item active" onclick="showSec('map')">⚔ Захоплення</div>
+        <div class="nav-item" onclick="showSec('cabinet')">👑 Кабінет</div>
+        <div class="nav-item" onclick="showSec('history')">🕘 Історія</div>
+        <div id="adm-nav" class="nav-item" style="display:none" onclick="showSec('admin')">⚙ Адмін</div>
+        <button onclick="logout()" style="margin: auto 20px 20px; background:#222">ВИХІД</button>
     </aside>
 
     <div class="main-content">
         <header class="mobile-header">
             <button onclick="toggleSidebar()" style="background:none; border:none; color:white; font-size:24px;">☰</button>
-            <span style="font-weight:bold; letter-spacing:1px;">CAPTURE UKRAINE</span>
-            <div style="width:24px;"></div>
+            <span>CAPTURE UKRAINE</span>
+            <div style="width:24px"></div>
         </header>
 
         <div class="stats-bar">
@@ -159,191 +121,183 @@
 
         <section id="sec-map" class="map-container">
             <div class="map-layout">
-                <div class="grid-cluster" id="cluster-1"></div>
-                <div class="grid-cluster" id="cluster-2"></div>
+                <div class="grid-cluster" id="c1"></div>
+                <div class="grid-cluster" id="c2"></div>
             </div>
         </section>
 
-        <section id="sec-cabinet" style="display:none; padding: 20px; overflow-y:auto;">
-            <h2>Активні операції</h2>
-            <button class="primary" onclick="openModal('modal-capt')">+ Створити новий капт</button>
-            <div id="capt-list" style="margin-top:20px;"></div>
+        <section id="sec-cabinet" style="display:none; padding:20px; overflow-y:auto">
+            <h2>Керування каптами</h2>
+            <button class="primary" style="width:200px" onclick="openModal('modal-capt')">+ Створити капт</button>
+            <div id="active-list" style="margin-top:20px"></div>
         </section>
 
-        <section id="sec-history" style="display:none; padding: 20px; overflow-y:auto;">
-            <h2>Історія захоплень</h2>
+        <section id="sec-history" style="display:none; padding:20px; overflow-y:auto">
+            <h2>Історія перемог</h2>
             <div id="hist-list"></div>
         </section>
 
-        <section id="sec-admin" style="display:none; padding: 20px; overflow-y:auto;">
-            <h2>Адмін-панель</h2>
-            <div id="user-list"></div>
+        <section id="sec-admin" style="display:none; padding:20px; overflow-y:auto">
+            <h2>Керування користувачами</h2>
+            <div id="adm-users"></div>
         </section>
-    </div>
-
-    <div class="overlay" id="modal-paint">
-        <div class="modal">
-            <h3>Територія №<span id="target-id">0</span></h3>
-            <label>Власник:</label>
-            <select id="p-gang">
-                <option value="none">Ніхто</option>
-                <option value="families">Families</option>
-                <option value="ballas">Ballas</option>
-                <option value="vagos">Vagos</option>
-                <option value="marabunta">Marabunta</option>
-            </select>
-            <label>Тип:</label>
-            <select id="p-type">
-                <option value="☠">☠ Звичайна</option>
-                <option value="🔒">🔒 Заблокована</option>
-                <option value="🏰">🏰 Титул</option>
-            </select>
-            <button class="primary" onclick="applyPaint()">ЗБЕРЕГТИ</button>
-            <button onclick="closeModal()" style="background:#333;">СКАСУВАТИ</button>
-        </div>
     </div>
 
     <div class="overlay" id="modal-capt">
         <div class="modal">
-            <h3>Нове захоплення</h3>
-            <input type="number" id="c-terr" placeholder="№ Території">
-            <select id="c-def">
+            <h3>Подання капта</h3>
+            <input type="number" id="capt-terr" placeholder="№ Території (1-77)">
+            <select id="capt-def">
                 <option value="families">Захист: Families</option>
                 <option value="ballas">Захист: Ballas</option>
                 <option value="vagos">Захист: Vagos</option>
                 <option value="marabunta">Захист: Marabunta</option>
             </select>
-            <input type="text" id="c-form" placeholder="Формат (н-р: 15х15)">
-            <input type="time" id="c-time">
-            <button class="primary" onclick="submitCapt()">СТВОРИТИ</button>
-            <button onclick="closeModal()" style="background:#333;">СКАСУВАТИ</button>
+            <input type="time" id="capt-time">
+            <button class="primary" onclick="addCapture()">Створити</button>
+            <button onclick="closeModal()" style="background:#333">Скасувати</button>
         </div>
     </div>
 
     <script>
-        // Data Handling
-        const bc = new BroadcastChannel('gtav_sync');
-        let territories = JSON.parse(localStorage.getItem('gt_t')) || Array.from({length:77}, (_,i)=>({id:i+1, gang:'none', type:'☠'}));
-        let captures = JSON.parse(localStorage.getItem('gt_c')) || [];
-        
-        // Для демонстрації - адмін по замовчуванню
-        const user = { role: 'admin', gang: 'marabunta', name: 'Matthew Reiss' };
+        const bc = new BroadcastChannel('gta_v_sync');
+        let currentUser = JSON.parse(sessionStorage.getItem('user')) || null;
+        let territories = JSON.parse(localStorage.getItem('db_terr')) || Array.from({length:77}, (_,i)=>({id:i+1, gang:'none', type:'☠'}));
+        let captures = JSON.parse(localStorage.getItem('db_caps')) || [];
+        let users = JSON.parse(localStorage.getItem('db_users')) || [];
 
-        function init() {
-            if(user.role === 'admin') document.getElementById('adm-nav').style.display = 'flex';
-            renderMap();
-            renderStats();
-            renderCaptures();
-            renderHistory();
+        let isRegMode = false;
+
+        function toggleAuth() {
+            isRegMode = !isRegMode;
+            document.getElementById('auth-title').innerText = isRegMode ? 'Реєстрація' : 'Вхід';
+            document.getElementById('reg-fields').style.display = isRegMode ? 'block' : 'none';
+            document.getElementById('auth-btn').innerText = isRegMode ? 'Зареєструватись' : 'Увійти';
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sb-overlay').classList.toggle('show');
+        function processAuth() {
+            const login = document.getElementById('auth-user').value;
+            const pass = document.getElementById('auth-pass').value;
+            const gang = document.getElementById('auth-gang').value;
+
+            if(!login || !pass) return alert("Заповніть поля!");
+
+            if(isRegMode) {
+                const newUser = { login, pass, gang, role: 'capt' };
+                users.push(newUser);
+                localStorage.setItem('db_users', JSON.stringify(users));
+                loginIn(newUser);
+            } else {
+                const u = users.find(x => x.login === login && x.pass === pass) || (login==='admin'&&pass==='admin'?{login:'admin', gang:'marabunta', role:'admin'}:null);
+                if(u) loginIn(u); else alert("Помилка входу");
+            }
         }
 
-        function showSec(id) {
-            ['map','cabinet','history','admin'].forEach(s => document.getElementById('sec-'+s).style.display = 'none');
-            document.getElementById('sec-'+id).style.display = (id === 'map') ? 'flex' : 'block';
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            if(window.innerWidth < 850) toggleSidebar();
+        function loginIn(u) {
+            currentUser = u;
+            sessionStorage.setItem('user', JSON.stringify(u));
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('u-login').innerText = `${u.login} (${u.role})`;
+            document.getElementById('u-gang-name').innerText = u.gang.toUpperCase();
+            if(u.role === 'admin') document.getElementById('adm-nav').style.display = 'flex';
+            renderAll();
+        }
+
+        function addCapture() {
+            const cap = {
+                id: Date.now(),
+                terr: document.getElementById('capt-terr').value,
+                attacker: currentUser.gang,
+                defender: document.getElementById('capt-def').value,
+                time: document.getElementById('capt-time').value,
+                status: 'active'
+            };
+            captures.push(cap);
+            save();
+            closeModal();
+        }
+
+        function finishCapture(id) {
+            const winner = prompt("Введіть банду переможця (families/ballas/vagos/marabunta):");
+            if(!winner) return;
+            const cap = captures.find(x => x.id === id);
+            cap.status = 'finished';
+            cap.winner = winner;
+            
+            // АВТО-ФАРБУВАННЯ
+            const terr = territories.find(t => t.id == cap.terr);
+            if(terr) terr.gang = winner;
+            
+            save();
+        }
+
+        function renderAll() {
+            renderMap(); renderStats(); renderCaps(); renderHist();
         }
 
         function renderMap() {
-            const c1 = document.getElementById('cluster-1');
-            const c2 = document.getElementById('cluster-2');
+            const c1 = document.getElementById('c1'); const c2 = document.getElementById('c2');
             c1.innerHTML = ''; c2.innerHTML = '';
-
-            territories.forEach((t, index) => {
+            territories.forEach((t, i) => {
                 const cell = document.createElement('div');
-                cell.className = `cell ${t.gang !== 'none' ? t.gang.substring(0,3) : ''}`;
-                cell.innerHTML = `<span class="id">${t.id}</span>${t.type}`;
-                cell.onclick = () => { if(user.role === 'admin') openPaint(t.id) };
-                (index < 42) ? c1.appendChild(cell) : c2.appendChild(cell);
+                cell.className = `cell ${t.gang.substring(0,3)}`;
+                cell.innerHTML = `<span style="position:absolute; top:2px; left:4px; font-size:8px; opacity:0.5">${t.id}</span>${t.type}`;
+                (i < 42) ? c1.appendChild(cell) : c2.appendChild(cell);
             });
         }
 
         function renderStats() {
             const counts = { families: 0, ballas: 0, vagos: 0, marabunta: 0 };
             territories.forEach(t => { if(counts[t.gang] !== undefined) counts[t.gang]++; });
-            document.getElementById('cnt-fam').innerText = counts.families;
-            document.getElementById('cnt-bal').innerText = counts.ballas;
-            document.getElementById('cnt-vag').innerText = counts.vagos;
-            document.getElementById('cnt-mar').innerText = counts.marabunta;
-        }
-
-        function openPaint(id) {
-            document.getElementById('target-id').innerText = id;
-            document.getElementById('modal-paint').style.display = 'flex';
-        }
-
-        function applyPaint() {
-            const id = parseInt(document.getElementById('target-id').innerText);
-            const t = territories.find(x => x.id === id);
-            t.gang = document.getElementById('p-gang').value;
-            t.type = document.getElementById('p-type').value;
-            save();
-            closeModal();
-        }
-
-        function submitCapt() {
-            const c = {
-                id: Date.now(),
-                terr: document.getElementById('c-terr').value,
-                attacker: user.gang,
-                defender: document.getElementById('c-def').value,
-                time: document.getElementById('c-time').value,
-                status: 'active'
-            };
-            captures.push(c);
-            save();
-            closeModal();
-        }
-
-        function renderCaptures() {
-            const list = document.getElementById('capt-list');
-            list.innerHTML = '';
-            captures.filter(c => c.status === 'active').forEach(c => {
-                list.innerHTML += `<div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:10px; border-left:4px solid var(--accent)">
-                    <b>${c.attacker.toUpperCase()} vs ${c.defender.toUpperCase()}</b><br>
-                    <small>Територія №${c.terr} | Час: ${c.time}</small>
-                    <button onclick="finishCapt(${c.id})" style="width:auto; margin-left:20px; padding:5px 10px; font-size:10px;">Завершити</button>
-                </div>`;
+            ['fam','bal','vag','mar'].forEach(k => {
+                const key = k === 'fam'?'families':k==='bal'?'ballas':k==='vag'?'vagos':'marabunta';
+                document.getElementById(`cnt-${k}`).innerText = counts[key];
             });
         }
 
-        function finishCapt(id) {
-            const c = captures.find(x => x.id === id);
-            c.status = 'finished';
-            c.winner = prompt("Хто переміг?", c.attacker);
-            save();
+        function renderCaps() {
+            const list = document.getElementById('active-list');
+            list.innerHTML = captures.filter(c => c.status === 'active').map(c => `
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--accent)">
+                    <b>${c.attacker} VS ${c.defender}</b> (Терр: ${c.terr}) | Час: ${c.time}
+                    ${['admin','lead','dep lead'].includes(currentUser.role) ? `<button onclick="finishCapture(${c.id})" style="width:auto; margin-left:15px; padding:5px 10px; font-size:11px">ПІДСУМОК</button>` : ''}
+                </div>
+            `).join('');
         }
 
-        function renderHistory() {
-            const list = document.getElementById('hist-list');
-            list.innerHTML = captures.filter(c => c.status === 'finished').map(c => 
-                `<div style="padding:10px; border-bottom:1px solid #333;">🏆 <b>${c.winner}</b> переміг у капті №${c.terr}</div>`
+        function renderHist() {
+            document.getElementById('hist-list').innerHTML = captures.filter(c => c.status === 'finished').reverse().map(c => 
+                `<div style="padding:10px; border-bottom:1px solid #333">🏆 Банда <b>${c.winner}</b> захопила територію №${c.terr}</div>`
             ).join('');
         }
 
-        function closeModal() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-
         function save() {
-            localStorage.setItem('gt_t', JSON.stringify(territories));
-            localStorage.setItem('gt_c', JSON.stringify(captures));
-            bc.postMessage('sync');
-            renderMap(); renderStats(); renderCaptures(); renderHistory();
+            localStorage.setItem('db_terr', JSON.stringify(territories));
+            localStorage.setItem('db_caps', JSON.stringify(captures));
+            bc.postMessage('update');
+            renderAll();
         }
 
         bc.onmessage = () => {
-            territories = JSON.parse(localStorage.getItem('gt_t'));
-            captures = JSON.parse(localStorage.getItem('gt_c'));
-            renderMap(); renderStats(); renderCaptures(); renderHistory();
+            territories = JSON.parse(localStorage.getItem('db_terr'));
+            captures = JSON.parse(localStorage.getItem('db_caps'));
+            renderAll();
         };
 
-        init();
+        function showSec(id) {
+            ['map','cabinet','history','admin'].forEach(s => document.getElementById('sec-'+s).style.display = 'none');
+            document.getElementById('sec-'+id).style.display = id==='map'?'flex':'block';
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            if(window.innerWidth < 850) toggleSidebar();
+        }
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
+        function logout() { sessionStorage.clear(); location.reload(); }
+
+        if(currentUser) loginIn(currentUser);
     </script>
 </body>
 </html>
